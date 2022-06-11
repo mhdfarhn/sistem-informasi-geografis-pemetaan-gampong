@@ -54,7 +54,7 @@ class AdminPostController extends Controller
         }
 
         $validatedData['excerpt'] = Str::limit(strip_tags($request->body), 200);
-        
+
         Post::create($validatedData);
 
         return redirect('/admin/posts')->with('success', 'Berita baru telah ditambahkan!');
@@ -131,7 +131,8 @@ class AdminPostController extends Controller
         return redirect('/admin/posts')->with('success', 'Berita berhasil dihapus!');
     }
 
-    public function checkSlug(Request $request) {
+    public function checkSlug(Request $request)
+    {
         $slug = SlugService::createSlug(Post::class, 'slug', $request->title);
         return response()->json(['slug' => $slug]);
     }

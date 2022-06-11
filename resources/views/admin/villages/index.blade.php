@@ -24,7 +24,7 @@
                     <td scope="row" class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $village->name }}</td>
                     <td class="text-center">{{ $village->district }}</td>
-                    <td class="text-center"><a href="{{ $village->site }}">{{ $village->site }}</a></td>
+                    <td class="text-center"><a target="_blank" href="http://{{ $village->site }}">{{ $village->site }}</a></td>
                     <td class="text-center">
                         <div class="d-flex">
                             <a href="{{ route('villages.edit', $village->id) }}" class="btn btn-sm btn-primary mx-1"><i class="far fa-edit"></i></a>

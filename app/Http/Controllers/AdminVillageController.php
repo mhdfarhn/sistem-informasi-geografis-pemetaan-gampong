@@ -95,7 +95,7 @@ class AdminVillageController extends Controller
      */
     public function update(Request $request, Village $village)
     {
-        $rules = $request->validate([
+        $rules = [
             'name' => 'required',
             'district' => 'required',
             'image' => 'image|file|max:1024',
@@ -103,7 +103,7 @@ class AdminVillageController extends Controller
             'site' => 'required',
             'long' => 'required',
             'lat' => 'required',
-        ]);
+        ];
 
         $validatedData = $request->validate($rules);
 
@@ -116,7 +116,7 @@ class AdminVillageController extends Controller
 
         Village::where('id', $village->id)->update($validatedData);
 
-        return redirect ('/admin/villages/')->with('success', 'Data Gampong berhasil diperbarui!');
+        return redirect('/admin/villages/')->with('success', 'Data Gampong berhasil diperbarui!');
     }
 
     /**

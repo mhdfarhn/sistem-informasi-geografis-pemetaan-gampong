@@ -123,7 +123,7 @@
                         </tr>
                         <tr>
                             <td>Situs Web</td>
-                            <td><a href="http://${site}">${site}</td>
+                            <td><a target="_blank" href="http://${site}">${site}</td>
                         </tr>
                     </tbody>
                 </table>
