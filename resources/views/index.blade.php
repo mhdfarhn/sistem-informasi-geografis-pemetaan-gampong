@@ -1,20 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- Header Image
-<img src="{{  asset('img/header-img.jpg')  }}" class="img-fluid" alt="dpmg-langsa"> --}}
-
 {{-- Map Section --}}
 <section class="bg-white py-2" id="villages">
   <div class="container">
     <div class="text-center py-4">
-      {{-- <h3 class="text-uppercase"><a href="{{ Nav::isRoute('villages') }}" class="text-dark">Pemetaan Gampong</a>
-      </h3> --}}
       <h3 class="text-uppercase">Pemetaan Gampong</h3>
       <h5 class="section-subheading text-muted">Dinas Pemberdayaan Masyarakat dan Gampong Kota Langsa</h5>
     </div>
     <div class="container pb-4">
       <div id="map" style="height: 400px;" class="mb-4"></div>
+      <div class="map-overlay" id="legend"></div>
     </div>
   </div>
 </section>
@@ -146,6 +142,7 @@
     })
   }
 
+  // Initiate geojson data
   const customData = {!! $geoJson !!}
 
   // Geocoder
@@ -200,7 +197,7 @@
     createPopUp(event.result)
   })
 
-
+  // Custom button for district boundaries
   class PemetaanButton {
     constructor({
       className = "",
@@ -232,6 +229,7 @@
     }
   }
 
+  // load geojson data for district boundaries
   map.on('load', () => {
     // langsa barat
     map.addSource('langsa-barat', {
@@ -275,6 +273,7 @@
         ]
       }
     });
+
     // langsa baro
     map.addSource('langsa-baro', {
       'type': 'geojson',
@@ -339,15 +338,14 @@
       }
     });
 
-  })
-
-  function one(event) {
     // langsa barat
     map.addLayer({
       'id': 'langsa-barat',
       'type': 'fill',
       'source': 'langsa-barat', // reference the data source
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'fill-color': '#ac92eb', // blue color fill
         'fill-opacity': 0.5
@@ -357,7 +355,9 @@
       'id': 'outline',
       'type': 'line',
       'source': 'langsa-baro',
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'line-color': '#000',
         'line-width': 1
@@ -369,7 +369,9 @@
       'id': 'langsa-baro',
       'type': 'fill',
       'source': 'langsa-baro', // reference the data source
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'fill-color': '#4fc1e8', // blue color fill
         'fill-opacity': 0.5
@@ -379,7 +381,9 @@
       'id': 'outline',
       'type': 'line',
       'source': 'langsa-baro',
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'line-color': '#000',
         'line-width': 1
@@ -391,7 +395,9 @@
       'id': 'langsa-kota',
       'type': 'fill',
       'source': 'langsa-kota', // reference the data source
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'fill-color': '#a0d568', // blue color fill
         'fill-opacity': 0.5
@@ -401,7 +407,9 @@
       'id': 'outline',
       'type': 'line',
       'source': 'langsa-kota',
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'line-color': '#000',
         'line-width': 1
@@ -413,7 +421,9 @@
       'id': 'langsa-lama',
       'type': 'fill',
       'source': 'langsa-lama', // reference the data source
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'fill-color': '#ffce54', // blue color fill
         'fill-opacity': 0.5
@@ -423,7 +433,9 @@
       'id': 'outline',
       'type': 'line',
       'source': 'langsa-lama',
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'line-color': '#000',
         'line-width': 1
@@ -435,7 +447,9 @@
       'id': 'langsa-timur',
       'type': 'fill',
       'source': 'langsa-timur', // reference the data source
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'fill-color': '#ed5564', // blue color fill
         'fill-opacity': 0.5
@@ -445,18 +459,76 @@
       'id': 'outline',
       'type': 'line',
       'source': 'langsa-lama',
-      'layout': {},
+      'layout': {
+        'visibility': 'none'
+      },
       'paint': {
         'line-color': '#000',
         'line-width': 1
       }
     });
+  })
+
+  const layers = [
+    'Langsa Barat',
+    'Langsa Baro',
+    'Langsa Kota',
+    'Langsa Lama',
+    'Langsa Timur',
+  ];
+
+  const colors = [
+    '#ac92eb',
+    '#4fc1e8',
+    '#a0d568',
+    '#ffce54',
+    '#ed5564',
+  ];
+
+  // create map legend
+  layers.forEach((layer, i) => {
+    const color = colors[i];
+    const title = document.createElement('h6');
+    const item = document.createElement('div');
+    const key = document.createElement('span');
+    key.className = 'legend-key';
+    key.style.backgroundColor = color;
+
+    const value = document.createElement('span');
+    value.innerHTML = `${layer}`;
+    item.appendChild(key);
+    item.appendChild(value);
+    legend.appendChild(item);
+  });
+
+  // event handler for pemetaanButton
+  function pemetaan(event) {
+    const langsaBaratVisibility = map.getLayoutProperty('langsa-barat', 'visibility')
+    const langsaBaroVisibility = map.getLayoutProperty('langsa-baro', 'visibility')
+    const langsaKotaVisibility = map.getLayoutProperty('langsa-kota', 'visibility')
+    const langsaLamaVisibility = map.getLayoutProperty('langsa-lama', 'visibility')
+    const langsaTimurVisibility = map.getLayoutProperty('langsa-timur', 'visibility')
+
+    if (langsaBaratVisibility === 'visible') {
+      map.setLayoutProperty('langsa-barat', 'visibility', 'none')
+      map.setLayoutProperty('langsa-baro', 'visibility', 'none')
+      map.setLayoutProperty('langsa-kota', 'visibility', 'none')
+      map.setLayoutProperty('langsa-lama', 'visibility', 'none')
+      map.setLayoutProperty('langsa-timur', 'visibility', 'none')
+    } else {
+      map.setLayoutProperty('langsa-barat', 'visibility', 'visible')
+      map.setLayoutProperty('langsa-baro', 'visibility', 'visible')
+      map.setLayoutProperty('langsa-kota', 'visibility', 'visible')
+      map.setLayoutProperty('langsa-lama', 'visibility', 'visible')
+      map.setLayoutProperty('langsa-timur', 'visibility', 'visible')
+    }
   }
 
+  // pemetaanButton object
   const pemetaanButton = new PemetaanButton({
     className: 'mapbox-gl-draw_polygon',
     title: 'Pemetaan',
-    eventHandler: one
+    eventHandler: pemetaan
   })
 
   loadLocations(customData)
